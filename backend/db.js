@@ -2,7 +2,12 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const { DatabaseSync } = require('node:sqlite');
 
-const db = new DatabaseSync(path.join(__dirname, 'students.db'));
+// Use Render's persistent disk when DB_PATH is provided.
+// Locally, it continues to use backend/students.db.
+const dbPath =
+  process.env.DB_PATH || path.join(__dirname, 'students.db');
+
+const db = new DatabaseSync(dbPath);
 
 db.exec('PRAGMA journal_mode = WAL;');
 
@@ -43,7 +48,10 @@ db.exec(`
 `);
 
 function seedIfEmpty() {
-  const count = db.prepare('SELECT COUNT(*) AS c FROM students').get().c;
+  const count = db
+    .prepare('SELECT COUNT(*) AS c FROM students')
+    .get().c;
+
   if (count > 0) return;
 
   const firstNames = [
@@ -141,56 +149,83 @@ function seedIfEmpty() {
   try {
     for (let i = 1; i <= 160; i++) {
       const firstName =
-        firstNames[Math.floor(Math.random() * firstNames.length)];
+        firstNames[
+          Math.floor(Math.random() * firstNames.length)
+        ];
 
       const lastName =
-        lastNames[Math.floor(Math.random() * lastNames.length)];
+        lastNames[
+          Math.floor(Math.random() * lastNames.length)
+        ];
 
       const course =
-        courses[Math.floor(Math.random() * courses.length)];
+        courses[
+          Math.floor(Math.random() * courses.length)
+        ];
 
       const department =
-        departments[Math.floor(Math.random() * departments.length)];
+        departments[
+          Math.floor(Math.random() * departments.length)
+        ];
 
       const gender =
-        genders[Math.floor(Math.random() * genders.length)];
+        genders[
+          Math.floor(Math.random() * genders.length)
+        ];
 
       const yearOfStudy =
         Math.floor(Math.random() * 4) + 1;
 
       const semester =
-        (yearOfStudy * 2) - (Math.random() < 0.5 ? 1 : 0);
+        (yearOfStudy * 2) -
+        (Math.random() < 0.5 ? 1 : 0);
 
       const section =
-        sections[Math.floor(Math.random() * sections.length)];
+        sections[
+          Math.floor(Math.random() * sections.length)
+        ];
 
       const attendance =
-        Math.round((65 + Math.random() * 33) * 100) / 100;
+        Math.round(
+          (65 + Math.random() * 33) * 100
+        ) / 100;
 
       const residentialStatus =
         residentialStatuses[
-          Math.floor(Math.random() * residentialStatuses.length)
+          Math.floor(
+            Math.random() * residentialStatuses.length
+          )
         ];
 
       const bloodGroup =
-        bloodGroups[Math.floor(Math.random() * bloodGroups.length)];
+        bloodGroups[
+          Math.floor(Math.random() * bloodGroups.length)
+        ];
 
       const admissionCategory =
         admissionCategories[
-          Math.floor(Math.random() * admissionCategories.length)
+          Math.floor(
+            Math.random() * admissionCategories.length
+          )
         ];
 
       const status =
-        statuses[Math.floor(Math.random() * statuses.length)];
+        statuses[
+          Math.floor(Math.random() * statuses.length)
+        ];
 
       const birthYear =
         2002 + Math.floor(Math.random() * 7);
 
       const birthMonth =
-        String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        String(
+          Math.floor(Math.random() * 12) + 1
+        ).padStart(2, '0');
 
       const birthDay =
-        String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        String(
+          Math.floor(Math.random() * 28) + 1
+        ).padStart(2, '0');
 
       const dateOfBirth =
         `${birthYear}-${birthMonth}-${birthDay}`;
@@ -209,9 +244,13 @@ function seedIfEmpty() {
         attendance,
         residentialStatus,
         `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i}@college.edu`,
-        `9${Math.floor(100000000 + Math.random() * 899999999)}`,
+        `9${Math.floor(
+          100000000 + Math.random() * 899999999
+        )}`,
         `Mr./Ms. ${lastName}`,
-        `9${Math.floor(100000000 + Math.random() * 899999999)}`,
+        `9${Math.floor(
+          100000000 + Math.random() * 899999999
+        )}`,
         `${Math.floor(Math.random() * 100) + 1}, College Road, Chennai`,
         bloodGroup,
         admissionCategory,
@@ -229,7 +268,9 @@ function seedIfEmpty() {
 }
 
 function seedUsersIfEmpty() {
-  const count = db.prepare('SELECT COUNT(*) AS c FROM users').get().c;
+  const count = db
+    .prepare('SELECT COUNT(*) AS c FROM users')
+    .get().c;
 
   if (count > 0) return;
 
@@ -269,7 +310,9 @@ function seedUsersIfEmpty() {
     );
   }
 
-  console.log('Seeded users: admin/Admin@123 and student/Student@123');
+  console.log(
+    'Seeded users: admin/Admin@123 and student/Student@123'
+  );
 }
 
 seedIfEmpty();

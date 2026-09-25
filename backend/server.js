@@ -457,8 +457,8 @@ app.delete('/api/students/:id', requireRole('admin'), (req, res) => {
   res.json({ success: true });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(
-    `Student Portal API running on http://localhost:${PORT}`
+    `Student Portal API running on port ${PORT}`
   );
 });
