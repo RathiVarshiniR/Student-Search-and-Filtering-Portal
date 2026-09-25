@@ -286,14 +286,14 @@ function seedUsersIfEmpty() {
 
   const defaultUsers = [
     {
-      username: 'admin',
-      password: 'Admin@123',
+      username: 'Kavin DR',
+      password: 'kavin@9',
       role: 'admin',
       display_name: 'Administrator'
     },
     {
-      username: 'student',
-      password: 'Student@123',
+      username: 'Rathi',
+      password: 'rathi@7',
       role: 'student',
       display_name: 'Student User'
     }
