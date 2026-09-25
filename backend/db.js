@@ -268,22 +268,6 @@ function seedIfEmpty() {
 }
 
 function seedUsersIfEmpty() {
-  const count = db
-    .prepare('SELECT COUNT(*) AS c FROM users')
-    .get().c;
-
-  if (count > 0) return;
-
-  const insert = db.prepare(`
-    INSERT INTO users (
-      username,
-      password_hash,
-      role,
-      display_name
-    )
-    VALUES (?, ?, ?, ?)
-  `);
-
   const defaultUsers = [
     {
       username: 'Kavin DR',
@@ -300,21 +284,47 @@ function seedUsersIfEmpty() {
   ];
 
   for (const u of defaultUsers) {
+    const existing = db
+      .prepare(
+        'SELECT id FROM users WHERE role = ? LIMIT 1'
+      )
+      .get(u.role);
+
     const hash = bcrypt.hashSync(u.password, 10);
 
-    insert.run(
-      u.username,
-      hash,
-      u.role,
-      u.display_name
-    );
+    if (existing) {
+      db.prepare(`
+        UPDATE users
+        SET username = ?,
+            password_hash = ?,
+            display_name = ?
+        WHERE id = ?
+      `).run(
+        u.username,
+        hash,
+        u.display_name,
+        existing.id
+      );
+    } else {
+      db.prepare(`
+        INSERT INTO users (
+          username,
+          password_hash,
+          role,
+          display_name
+        )
+        VALUES (?, ?, ?, ?)
+      `).run(
+        u.username,
+        hash,
+        u.role,
+        u.display_name
+      );
+    }
   }
 
-  console.log(
-    'Seeded users: admin/Admin@123 and student/Student@123'
-  );
+  console.log('User credentials synchronized.');
 }
-
 seedIfEmpty();
 seedUsersIfEmpty();
 
